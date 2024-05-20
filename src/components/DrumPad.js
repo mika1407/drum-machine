@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 const DrumPad = ({ sound, handleDisplay }) => {
-  const playSound = () => {
+  const playSound = useCallback(() => {
     const audio = document.getElementById(sound.key);
     if (audio) {
       audio.pause(); // Pause the audio if it's already playing
@@ -9,20 +9,20 @@ const DrumPad = ({ sound, handleDisplay }) => {
       audio.play().catch(error => console.error('Error playing audio:', error));
       handleDisplay(sound.id);
     }
-  };
+  }, [sound.key, sound.id, handleDisplay]);
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = useCallback((e) => {
     if (e.key.toUpperCase() === sound.key) {
       playSound();
     }
-  };
+  }, [playSound, sound.key]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
-  }, []);
+  }, [handleKeyPress]);
 
   return (
     <div className="drum-pad" id={sound.id} onClick={playSound}>
